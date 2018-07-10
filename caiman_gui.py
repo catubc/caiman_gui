@@ -29,7 +29,7 @@ class MainW(QMainWindow):
     # *****************************************************
     @pyqtSlot()
     def on_loadpicture_clicked(self):
-        fname = '/home/cat/Dropbox/murphy_lab.jpg'
+        fname = 'murphy_lab.jpg'
         self.image=cv2.imread(fname)
         self.displayImage()
         
@@ -56,7 +56,7 @@ class MainW(QMainWindow):
             Note: can also use opencv directly via a pop up window 
         '''
         print ("Loading movie")
-        filename = '/home/cat/Downloads/5Cell.avi'
+        filename = '5Cell.avi'
         camera = cv2.VideoCapture(filename)
 
         # load movie
@@ -108,7 +108,7 @@ class MainW(QMainWindow):
         def nothing(x):
             pass
 
-        filename = '/home/cat/Downloads/5Cell.avi'
+        filename = '5Cell.avi'
         camera = cv2.VideoCapture(filename)
 
         # Create a black image, a window
