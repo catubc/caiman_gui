@@ -102,20 +102,12 @@ class MainW(QMainWindow):
                     OR use caiman only to read imaging files
         ''' 
 
-        print ("Loading movie: ", fname)
-        if "Berlusconi" in fname: 
-            self.movie = np.random.random((300,300,300))
-            return
-            
-        camera = cv2.VideoCapture(fname)
-        movie = []
-        while True:
-            (grabbed, frame) = camera.read()
-            if not grabbed: break
-            image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            movie.append(frame)
+        # load movie
+        movie = cm.load('/Users/agiovann/SOFTWARE/CaImAn/example_movies/demoMovie.tif')
 
-        self.movie = np.array(movie)
+
+        self.movie = ((movie-np.min(movie))/(np.max(movie)-np.min(movie))*255*2).astype(np.uint8)
+        print(self.movie.shape)
         print ("Finished loading")
         
     def generic_movie_load(self, slider_widget, list_widget, 
@@ -165,12 +157,8 @@ class MainW(QMainWindow):
         # standardized code for convering image to 
         # Cat: TODO: is all this formatting necessary? 
         # Cat: TODO: also, can we just cast opencv imshow to the widget?
-        qformat=QImage.Format_Indexed8
-        if len(image.shape)==3:
-            if(image.shape[2])==4:
-                qformat=QImage.Format_RBA8888
-            else:
-                qformat=QImage.Format_RGB888
+        qformat=QImage.Format_Grayscale8
+
         
         # convert from opencv format to pyqt QImage format
         img=QImage(image,image.shape[1],image.shape[0],image.strides[0],qformat)
