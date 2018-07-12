@@ -11,15 +11,20 @@ from PyQt5.QtWidgets import (QDialog, QApplication, QMainWindow, QSlider,
                               QFileDialog, QTabWidget)
 from PyQt5.uic import loadUi
 import numpy as np
+import caiman as cm
 
 class MainW(QMainWindow):
     def __init__(self):
         super(MainW,self).__init__()
         loadUi('main.ui',self)
         
-        self.image=[]
-        self.movie=[]
+        self.image = []
+        self.movie = []
         self.playmovie_flag=True
+        self.data_min = None
+        self.data_max = None
+        self.slider_min = 0
+        self.slider_max = 99
         # execute when tabs changed
         #self.tabs = QTabWidget()
         #self.tabsWidget.blockSignals(True) #just for not showing the initial message
@@ -30,8 +35,14 @@ class MainW(QMainWindow):
         #       that plot movies
         
         # initialize load tab sliders
+        self.loadSliderMaxIntensity.setValue(99)
+        self.loadSliderMinIntensity.setValue(0)
         self.loadSliderFrame.valueChanged.connect(self.loadSliderFrame_func)
-        
+        self.loadSliderMinIntensity.valueChanged.connect(self.loadSliderMinIntensity_func)
+        self.loadSliderMaxIntensity.valueChanged.connect(self.loadSliderMaxIntensity_func)
+
+
+
         # initalize motion tab sliders
         self.motionSliderFrame.valueChanged.connect(self.motionSliderFrame_func)
         
@@ -49,8 +60,8 @@ class MainW(QMainWindow):
 
     @pyqtSlot()
     def on_loadFiles_clicked(self):
-        self.files = QFileDialog.getOpenFileNames(self,  'Open file','/home/cat/',
-          ("Images (*.avi *.txt)"))[0]
+        self.files = QFileDialog.getOpenFileNames(self,  'Open file','./',
+                                                  "Images (*.avi *.tif *.hdf5 *.mmap)")[0]
         
         if len(self.files)>0:
             print ("files selected: ")
@@ -106,7 +117,13 @@ class MainW(QMainWindow):
         movie = cm.load('/Users/agiovann/SOFTWARE/CaImAn/example_movies/demoMovie.tif')
 
 
-        self.movie = ((movie-np.min(movie))/(np.max(movie)-np.min(movie))*255*2).astype(np.uint8)
+        self.movie = movie
+        self.data_min = np.float(movie.min())
+        self.data_max = np.float(movie.max())
+
+
+
+
         print(self.movie.shape)
         print ("Finished loading")
         
@@ -137,6 +154,20 @@ class MainW(QMainWindow):
         # call the generic slider with slider ID and target widget ID
         self.generic_slider_func(self.loadSliderFrame, self.loadScreen)
 
+    def loadSliderMinIntensity_func(self):
+        # call the generic slider with slider ID and target widget ID
+        self.slider_min = np.float(self.loadSliderMinIntensity.value())
+        print(self.slider_min)
+        image = self.movie[self.loadSliderFrame.value()]
+        self.displayImage(image, self.loadScreen)
+
+    def loadSliderMaxIntensity_func(self):
+        # call the generic slider with slider ID and target widget ID
+        self.slider_max = np.float(self.loadSliderMaxIntensity.value())
+        print(self.slider_max)
+        image = self.movie[self.loadSliderFrame.value()]
+        self.displayImage(image, self.loadScreen)
+
     def generic_slider_func(self, slider_widget, screen_widget):
         ''' Takes slider widget and its value and displays in target
             screen widget
@@ -145,10 +176,9 @@ class MainW(QMainWindow):
         if len(self.movie)==0:
             print ("No movie loaded ...")
             return
-        
+
         # load frame from slider and grab movie frame
         image = self.movie[slider_widget.value()]
-
         self.displayImage(image, screen_widget)
 
     def displayImage(self, image, screen_widget):
@@ -157,14 +187,23 @@ class MainW(QMainWindow):
         # standardized code for convering image to 
         # Cat: TODO: is all this formatting necessary? 
         # Cat: TODO: also, can we just cast opencv imshow to the widget?
+        img = ((image-self.data_min)/(self.data_max-self.data_min))*99
+        img = (np.clip((img-self.slider_min)/(self.slider_max-self.slider_min),0,1)*255).astype(np.uint8)
         qformat=QImage.Format_Grayscale8
-
-        
         # convert from opencv format to pyqt QImage format
-        img=QImage(image,image.shape[1],image.shape[0],image.strides[0],qformat)
+        img=QImage(img,img.shape[1],img.shape[0],img.strides[0],qformat)
         pixmap = QtGui.QPixmap(img)
+        pixmap4 = pixmap.scaled(500, 500)
 
-        screen_widget.setPixmap(pixmap)        
+        # self.imgLabel.setPixmap(pixmap4)
+        # self.imgLabel.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+
+
+
+
+
+
+        screen_widget.setPixmap(pixmap4)
         
         
     # *****************************************************
@@ -173,22 +212,6 @@ class MainW(QMainWindow):
     def onChange(self,i): #changed!
         print ("Current Tab: ", i)
 
-class Worker(QtCore.QObject):
-    def __init__(self, parent=None):
-        QtCore.QObject.__init__(self, parent)
-
-        self.t1 = QtCore.QThread()
-        self.moveToThread(self.t1)
-        self.t1.start()
-
-    def do_stuff(self):
-        ctr=0
-        while self.playflag:
-            if ctr%1000000==0:
-                print ("loop: ", ctr)
-            ctr+=1
-            
-    
     
 
 app = QApplication(sys.argv)
