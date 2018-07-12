@@ -1,115 +1,396 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>CaImAnGUI</class>
+ <widget class="QMainWindow" name="CaImAnGUI">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>546</width>
-    <height>711</height>
+    <width>522</width>
+    <height>713</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>CaImAnGUI</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="loadmovie">
+   <widget class="QTabWidget" name="tabsWidget">
     <property name="geometry">
      <rect>
-      <x>190</x>
-      <y>80</y>
-      <width>99</width>
-      <height>27</height>
+      <x>0</x>
+      <y>0</y>
+      <width>521</width>
+      <height>681</height>
      </rect>
     </property>
-    <property name="text">
-     <string>loadmovie</string>
+    <property name="currentIndex">
+     <number>1</number>
     </property>
+    <widget class="QWidget" name="tab_3">
+     <attribute name="title">
+      <string>Load</string>
+     </attribute>
+     <widget class="QListWidget" name="loadList">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>0</y>
+        <width>391</width>
+        <height>161</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="loadFiles">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>99</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Load File(s)</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="loadScreen">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>170</y>
+        <width>391</width>
+        <height>311</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Panel</enum>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="loadMovieLoad">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>170</y>
+        <width>111</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Load Selected 
+Movie</string>
+      </property>
+     </widget>
+     <widget class="QSlider" name="loadSliderFrame">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>490</y>
+        <width>391</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="loadPlayMovie">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>210</y>
+        <width>111</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Play Movie</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="loadStopMovie">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>370</y>
+        <width>111</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Stop Movie</string>
+      </property>
+     </widget>
+     <widget class="QSlider" name="loadSliderMinIntensity">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>520</y>
+        <width>391</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QSlider" name="loadSliderMaxIntensity">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>550</y>
+        <width>391</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>490</y>
+        <width>101</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Frame Select</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>520</y>
+        <width>101</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Min Intensity</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_3">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>550</y>
+        <width>101</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Max Intensity</string>
+      </property>
+     </widget>
+     <widget class="QSlider" name="loadSliderPlayback">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>280</y>
+        <width>101</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_4">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>260</y>
+        <width>111</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Playback Speed</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_4">
+     <attribute name="title">
+      <string>Motion Correction</string>
+     </attribute>
+     <widget class="QPushButton" name="motionMovieLoad">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>280</y>
+        <width>171</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Show Selected Movie</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="motionScreen">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>310</y>
+        <width>491</width>
+        <height>221</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Panel</enum>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QSlider" name="motionSliderFrame">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>540</y>
+        <width>391</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="maximum">
+       <number>273</number>
+      </property>
+      <property name="value">
+       <number>0</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>10</y>
+        <width>251</width>
+        <height>261</height>
+       </rect>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tab_5">
+       <attribute name="title">
+        <string>Rigid</string>
+       </attribute>
+       <widget class="QPushButton" name="motionRunRigid">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>200</y>
+          <width>191</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Run Rigid Correction</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab_6">
+       <attribute name="title">
+        <string>Non-rigid</string>
+       </attribute>
+      </widget>
+     </widget>
+     <widget class="QListWidget" name="motionList">
+      <property name="geometry">
+       <rect>
+        <x>260</x>
+        <y>40</y>
+        <width>256</width>
+        <height>231</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QSlider" name="motionSliderMinIntensity">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>570</y>
+        <width>391</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QSlider" name="motionSliderMaxIntensity">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>600</y>
+        <width>391</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_5">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>540</y>
+        <width>101</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Frame Select</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_6">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>570</y>
+        <width>101</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Min Intensity</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_7">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>600</y>
+        <width>101</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Max Intensity</string>
+      </property>
+     </widget>
+    </widget>
    </widget>
-   <widget class="QLabel" name="imgLabel">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>110</y>
-      <width>501</width>
-      <height>391</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::Panel</enum>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QSlider" name="Slider1">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>540</y>
-      <width>441</width>
-      <height>29</height>
-     </rect>
-    </property>
-    <property name="maximum">
-     <number>273</number>
-    </property>
-    <property name="value">
-     <number>0</number>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="loadpicture">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>30</y>
-      <width>99</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>loadpicture</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="loadmovieOpencv">
-    <property name="geometry">
-     <rect>
-      <x>328</x>
-      <y>30</y>
-      <width>141</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>loadmovieOpencv</string>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>546</width>
-     <height>25</height>
-    </rect>
-   </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
  <connections>
   <connection>
-   <sender>Slider1</sender>
+   <sender>motionSliderFrame</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>Slider1</receiver>
+   <receiver>motionSliderFrame</receiver>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
