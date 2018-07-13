@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import (QDialog, QApplication, QMainWindow, QSlider,
 from PyQt5.uic import loadUi
 import numpy as np
 import caiman as cm
+from caiman.motion_correction import MotionCorrect
 
 class MainW(QMainWindow):
     def __init__(self):
@@ -63,6 +64,7 @@ class MainW(QMainWindow):
         self.files = QFileDialog.getOpenFileNames(self,  'Open file','./',
                                                   "Images (*.avi *.tif *.hdf5 *.mmap)")[0]
         
+        self.files.sort()
         if len(self.files)>0:
             print ("files selected: ")
             for k in range(len(self.files)):
@@ -89,9 +91,19 @@ class MainW(QMainWindow):
         
     @pyqtSlot()
     def on_motionRunRigid_clicked(self):
-        print ("Running rigid motion correction")
-        self.motionList.addItem("Berlusconi " +
-                    str(np.random.randint(2016,2040,1)))
+        print ("Running rigid motion correction on the following files")
+        print(self.files)
+        self.motion_correct_rigid(self.files)
+        for fls in self.motion_correct.fname_tot_rig:
+            self.motionList.addItem(fls)
+
+    @pyqtSlot()
+    def on_motionRunPWRigid_clicked(self):
+        print('Running pw-rigid motion correction on the following files')
+        print(self.files)
+        self.motion_correct_pwrigid(self.files)
+        for fls in self.motion_correct.fname_tot_els:
+            self.motionList.addItem(fls)
         
     @pyqtSlot()
     def on_motionMovieLoad_clicked(self):
@@ -135,6 +147,7 @@ class MainW(QMainWindow):
         
         if len(list_widget.selectedIndexes())>0:
             fname = list_widget.selectedIndexes()[0].data()
+            print('Playing movie:' + fname)
             self.loadmovie(fname)
             self.displayImage(self.movie[0], screen_widget)
             
@@ -212,6 +225,78 @@ class MainW(QMainWindow):
     def onChange(self,i): #changed!
         print ("Current Tab: ", i)
 
+
+    def motion_correct_rigid(self, fname):
+        try:
+            dview = None
+            c, dview, n_processes = cm.cluster.setup_cluster(
+                backend='local', n_processes=None, single_thread=False)
+
+            niter_rig = 1  # number of iterations for rigid motion correction
+            max_shifts = (6, 6)  # maximum allow rigid shift
+            # for parallelization split the movies in  num_splits chuncks across time
+            splits_rig = 56
+            # first we create a motion correction object with the parameters specified
+            min_mov = cm.load(fname[0], subindices=range(200)).min()
+            # this will be subtracted from the movie to make it non-negative
+
+            mc = MotionCorrect(fname, min_mov, dview=dview, max_shifts=max_shifts,
+                               niter_rig=niter_rig, splits_rig=splits_rig,
+                               border_nan='copy', shifts_opencv=True, nonneg_movie=True)
+
+            mc.motion_correct_rigid(save_movie=True)
+
+            self.motion_correct = mc
+        except Exception as e:
+            raise e
+        finally:
+            cm.cluster.stop_server(dview=dview)
+            cm.cluster.setup_cluster(
+                backend='local', n_processes=None, single_thread=False)
+
+    def motion_correct_pwrigid(self, fname):
+        try:
+            dview = None
+            c, dview, n_processes = cm.cluster.setup_cluster(
+                backend='local', n_processes=None, single_thread=False)
+
+            niter_rig = 1  # number of iterations for rigid motion correction
+            max_shifts = (6, 6)  # maximum allow rigid shift
+            # for parallelization split the movies in  num_splits chuncks across time
+            splits_rig = 56
+            # start a new patch for pw-rigid motion correction every x pixels
+            strides = (48, 48)
+            # overlap between pathes (size of patch strides+overlaps)
+            overlaps = (24, 24)
+            # for parallelization split the movies in  num_splits chuncks across time
+            splits_els = 56
+
+            upsample_factor_grid = 4  # upsample factor to avoid smearing when merging patches
+            # maximum deviation allowed for patch with respect to rigid shifts
+            max_deviation_rigid = 3
+            # first we create a motion correction object with the parameters specified
+            min_mov = cm.load(fname[0], subindices=range(200)).min()
+            # this will be subtracted from the movie to make it non-negative
+
+            mc = MotionCorrect(fname, min_mov, dview=dview, max_shifts=max_shifts,
+                               niter_rig=niter_rig, splits_rig=splits_rig,
+                               strides=strides, overlaps=overlaps,
+                               splits_els=splits_els, border_nan='copy',
+                               upsample_factor_grid=upsample_factor_grid,
+                               max_deviation_rigid=max_deviation_rigid,
+                               shifts_opencv=True, nonneg_movie=True)
+
+            mc.motion_correct_pwrigid(save_movie=True)
+
+            self.motion_correct = mc
+        except Exception as e:
+            raise e
+        finally:
+            cm.cluster.stop_server(dview=dview)
+            cm.cluster.setup_cluster(
+                backend='local', n_processes=None, single_thread=False)
+
+
     
 
 app = QApplication(sys.argv)
@@ -219,6 +304,9 @@ window=MainW()
 window.setWindowTitle('Test')
 window.show()
 sys.exit(app.exec_())
+
+
+
 
 
 
