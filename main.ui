@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>4</number>
     </property>
     <widget class="QWidget" name="tab_3">
      <attribute name="title">
@@ -416,7 +416,7 @@ Movie</string>
          <string>Run Rigid Correction</string>
         </property>
        </widget>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>20</x>
@@ -456,12 +456,8 @@ Movie</string>
          </item>
         </layout>
        </widget>
+       <zorder>layoutWidget</zorder>
        <zorder>motionRunRigid</zorder>
-       <zorder>motionRigidLineEditMaxShifts</zorder>
-       <zorder>motionRigidLineEditSplits</zorder>
-       <zorder>label_21</zorder>
-       <zorder>label_22</zorder>
-       <zorder>label_22</zorder>
       </widget>
       <widget class="QWidget" name="tab_6">
        <attribute name="title">
@@ -480,7 +476,7 @@ Movie</string>
          <string>Run PW Rigid Correction</string>
         </property>
        </widget>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>20</x>
@@ -691,6 +687,402 @@ Movie</string>
      <attribute name="title">
       <string>PostProcessing</string>
      </attribute>
+     <widget class="QLabel" name="postProcScreenFrames">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>341</width>
+        <height>361</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Panel</enum>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="postProcScreenCorrImage">
+      <property name="geometry">
+       <rect>
+        <x>360</x>
+        <y>20</y>
+        <width>331</width>
+        <height>361</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Panel</enum>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="postProcScreenComponents">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>410</y>
+        <width>151</width>
+        <height>151</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Panel</enum>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="postProcScreenTraces">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>410</y>
+        <width>521</width>
+        <height>151</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Panel</enum>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_11">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>570</y>
+        <width>110</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Frame Select</string>
+      </property>
+     </widget>
+     <widget class="QSlider" name="postProcSliderFrame">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>570</y>
+        <width>400</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QSlider" name="postProcSelectComponent">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>600</y>
+        <width>400</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_12">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>630</y>
+        <width>101</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>SNR min</string>
+      </property>
+     </widget>
+     <widget class="QSlider" name="postProcSliderSNR_MIN">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>630</y>
+        <width>391</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_13">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>600</y>
+        <width>110</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Component Select</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_14">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>660</y>
+        <width>101</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>CNN min</string>
+      </property>
+     </widget>
+     <widget class="QSlider" name="postProcSliderCNN_MIN">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>660</y>
+        <width>391</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_15">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>690</y>
+        <width>101</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>RVAL min</string>
+      </property>
+     </widget>
+     <widget class="QSlider" name="postProcSliderRVAL_MIN">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>690</y>
+        <width>391</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_16">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>750</y>
+        <width>101</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>CNN suff</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_17">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>780</y>
+        <width>101</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>RVAL suff</string>
+      </property>
+     </widget>
+     <widget class="QSlider" name="postProcSliderRVAL_SUFF">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>780</y>
+        <width>391</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_18">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>720</y>
+        <width>101</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>SNR suff</string>
+      </property>
+     </widget>
+     <widget class="QSlider" name="postProcSliderSNR_SUFF">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>720</y>
+        <width>391</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QSlider" name="postProcSliderCNN_SUFF">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>750</y>
+        <width>391</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="postProcLineEditFrame">
+      <property name="geometry">
+       <rect>
+        <x>570</x>
+        <y>570</y>
+        <width>91</width>
+        <height>21</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="postProcLineEditComp">
+      <property name="geometry">
+       <rect>
+        <x>570</x>
+        <y>600</y>
+        <width>91</width>
+        <height>21</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="postProcButtonDelComp">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>640</y>
+        <width>141</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Delete component</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="postProcButtonAddComp">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>680</y>
+        <width>141</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Add component</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="postProcButtonSaveObj">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>720</y>
+        <width>141</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Save object</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="postProcButtonDelComp_2">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>760</y>
+        <width>141</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Export component</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_19">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>0</y>
+        <width>51</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Movie</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_20">
+      <property name="geometry">
+       <rect>
+        <x>450</x>
+        <y>0</y>
+        <width>141</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Selected Components</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_29">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>390</y>
+        <width>81</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Component</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_30">
+      <property name="geometry">
+       <rect>
+        <x>390</x>
+        <y>390</y>
+        <width>81</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Trace</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_finrev">
      <attribute name="title">
