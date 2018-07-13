@@ -3,6 +3,10 @@
 
 import sys
 import cv2
+import numpy as np
+from numpy import arange, sin, pi
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSlot
@@ -10,7 +14,7 @@ from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import (QDialog, QApplication, QMainWindow, QSlider,
                               QFileDialog, QTabWidget)
 from PyQt5.uic import loadUi
-import numpy as np
+
 import caiman as cm
 from caiman.motion_correction import MotionCorrect
 
@@ -18,9 +22,12 @@ class MainW(QMainWindow):
     def __init__(self):
         super(MainW,self).__init__()
         loadUi('main.ui',self)
-        
+ 
+        # initialize all required variables
         self.image = []
         self.movie = []
+        self.files = []
+        self.movie_ctr=0
         self.playmovie_flag=True
         self.data_min = None
         self.data_max = None
@@ -42,16 +49,18 @@ class MainW(QMainWindow):
         self.loadSliderMinIntensity.valueChanged.connect(self.loadSliderMinIntensity_func)
         self.loadSliderMaxIntensity.valueChanged.connect(self.loadSliderMaxIntensity_func)
 
-
-
         # initalize motion tab sliders
         self.motionSliderFrame.valueChanged.connect(self.motionSliderFrame_func)
         
+        # initialize postProcessing data
+        self.show_postProcScreenTraces()
         
-        
-    # *****************************************************
-    # **************** BUTTONS  ***************************
-    # *****************************************************
+    ''' *********************************************************
+        *********************************************************
+        ******************** MOVIE FUNCTIONS ********************
+        *********************************************************
+        *********************************************************
+    '''
     ''' Syntax for buttons is: "on_" + name of button + '_clicked".
         Convention: each button name begins with the tab name (e.g. "load", 
         "motion") in non-capitalized letters.
@@ -79,16 +88,16 @@ class MainW(QMainWindow):
 
     @pyqtSlot()
     def on_loadPlayMovie_clicked(self):
-        # TODO
-        print ("play movie not implemented")
-        #self.worker = Worker()
-        #self.worker.playflag = True
-        #self.worker.do_stuff()
+
+        self.timer = QtCore.QTimer(self)
+        self.timer.start(10)
+        self.timer.timeout.connect(self.playmovie)        
         
     @pyqtSlot()
     def on_loadStopMovie_clicked(self):
-        print ("stop movie not impplemented")
-        
+        self.timer.stop()
+
+
     @pyqtSlot()
     def on_motionRunRigid_clicked(self):
         print ("Running rigid motion correction on the following files")
@@ -100,10 +109,13 @@ class MainW(QMainWindow):
     @pyqtSlot()
     def on_motionRunPWRigid_clicked(self):
         print('Running pw-rigid motion correction on the following files')
-        print(self.files)
-        self.motion_correct_pwrigid(self.files)
-        for fls in self.motion_correct.fname_tot_els:
-            self.motionList.addItem(fls)
+        if len(self.files)>0:
+            print(self.files)
+            self.motion_correct_pwrigid(self.files)
+            for fls in self.motion_correct.fname_tot_els:
+                self.motionList.addItem(fls)
+        else:
+            print("no files loaded")
         
     @pyqtSlot()
     def on_motionMovieLoad_clicked(self):
@@ -112,12 +124,13 @@ class MainW(QMainWindow):
                                                         self.motionScreen)
 
 
-    # *****************************************************
-    # **************** FUNCTIONS **************************
-    # *****************************************************
-    ''' Goal of functions is to direct all tab/screen input through 
-        generic functions.
+    ''' *********************************************************
+        *********************************************************
+        ******************** MOVIE FUNCTIONS ********************
+        *********************************************************
+        *********************************************************
     '''
+
 
     def loadmovie(self,fname):
         ''' Load movie from disk using opencv
@@ -126,62 +139,103 @@ class MainW(QMainWindow):
         ''' 
 
         # load movie
-        movie = cm.load('/Users/agiovann/SOFTWARE/CaImAn/example_movies/demoMovie.tif')
-
+        print ("Loading movie")
+        movie = cm.load('/home/cat/code/CaImAn/example_movies/demoMovie.tif')
 
         self.movie = movie
         self.data_min = np.float(movie.min())
         self.data_max = np.float(movie.max())
 
-
-
-
         print(self.movie.shape)
         print ("Finished loading")
+    
+    def playmovie(self):
+        # load next frame and compute movie counter
+        self.movie_ctr=(self.movie_ctr+1)%self.movie.shape[0]
+        img = self.load_single_image(self.movie_ctr)
         
+        # set intensity based on slider values
+        image = (np.clip((img-self.slider_min)/
+              (self.slider_max-self.slider_min),0,1)*255).astype(np.uint8)
+              
+              
+        # update slider location with current frame index
+        self.loadSliderFrame.setValue(self.movie_ctr)
+        
+        # update slide frame box with current frame index
+        self.loadLineEditFrameId.setText(str(self.movie_ctr))
+        
+        # display image
+        self.displayImage(image, self.loadScreen)
+    
     def generic_movie_load(self, slider_widget, list_widget, 
                                                         screen_widget):
         ''' Load movie, initialize first frame in screen widget and
-            find length of image stack and assign to slider range.
+            find length of image stack to assign to slider range.
         '''
         
         if len(list_widget.selectedIndexes())>0:
             fname = list_widget.selectedIndexes()[0].data()
-            print('Playing movie:' + fname)
-            self.loadmovie(fname)
-            self.displayImage(self.movie[0], screen_widget)
             
-            # set slider range also
+            print('Loading movie:' + fname)
+            self.loadmovie(fname)
+            
+            # set frame 0 on screen
+            img = self.load_single_image(self.loadSliderFrame.value())
+                    
+            # set intensity based on slider values
+            image = (np.clip((img-self.slider_min)/
+                  (self.slider_max-self.slider_min),0,1)*255).astype(np.uint8)
+              
+            self.displayImage(image, screen_widget)
+            
+            # set slider range based on size of movie
+            # Cat: TODO: the shape[0] value may not always be correct
             slider_widget.setRange(0,self.movie.shape[0]-1)
 
         else:
             print (list_widget.selectedIndexes())
             print ("No file selected...")
 
-
-    def motionSliderFrame_func(self):
-        # call the generic slider with slider ID and target widget ID
-        self.generic_slider_func(self.motionSliderFrame, self.motionScreen)
+    
+    ''' *********************************************************
+        *********************************************************
+        ******************** SLIDER FUNCTIONS********************
+        *********************************************************
+        *********************************************************
+    '''
 
     def loadSliderFrame_func(self):
+        # update movie_ctr based on current frame value
+        self.movie_ctr=self.loadSliderFrame.value()
+        self.loadLineEditFrameId.setText(str(self.movie_ctr))
+
+        # load img
+        img = self.update_image()
+
         # call the generic slider with slider ID and target widget ID
-        self.generic_slider_func(self.loadSliderFrame, self.loadScreen)
+        self.generic_slider_func(img,self.loadScreen)
 
     def loadSliderMinIntensity_func(self):
         # call the generic slider with slider ID and target widget ID
         self.slider_min = np.float(self.loadSliderMinIntensity.value())
-        print(self.slider_min)
-        image = self.movie[self.loadSliderFrame.value()]
-        self.displayImage(image, self.loadScreen)
+
+        img = self.update_image()
+        self.generic_slider_func(img,self.loadScreen)
 
     def loadSliderMaxIntensity_func(self):
         # call the generic slider with slider ID and target widget ID
         self.slider_max = np.float(self.loadSliderMaxIntensity.value())
-        print(self.slider_max)
-        image = self.movie[self.loadSliderFrame.value()]
-        self.displayImage(image, self.loadScreen)
 
-    def generic_slider_func(self, slider_widget, screen_widget):
+        img = self.update_image()
+        
+        self.generic_slider_func(img,self.loadScreen)
+        
+    def motionSliderFrame_func(self):
+        # call the generic slider with slider ID and target widget ID
+        self.generic_slider_func(self.motionSliderFrame, self.motionScreen)
+        
+    def generic_slider_func(self, image, screen_widget):
         ''' Takes slider widget and its value and displays in target
             screen widget
         '''
@@ -190,40 +244,84 @@ class MainW(QMainWindow):
             print ("No movie loaded ...")
             return
 
-        # load frame from slider and grab movie frame
-        image = self.movie[slider_widget.value()]
+        # set frame counter value
+        #self.loadSliderFrame.setValue(slider_widget.value())
+
+        # load frame from slider and set frame widget
+        #image = self.load_single_image(slider_widget.value())
+
+        # display frame
+        img = self.update_image()
+
         self.displayImage(image, screen_widget)
 
-    def displayImage(self, image, screen_widget):
+
+    ''' *********************************************************
+        *********************************************************
+        ******************** IMAGE FUNCTIONS ********************
+        *********************************************************
+        *********************************************************
+    '''
+
+    def load_single_image(self, index):
+        ''' This function loads and normalizes a single image.
+            Need to do this outside of display function.
+        '''
+        
+        img = self.movie[index]
+        image_out = ((img-self.data_min)/(self.data_max-self.data_min))*99
+        return image_out
+        
+    def update_image(self):
+        # load single image
+        img = self.load_single_image(self.loadSliderFrame.value())
+        
+        # set intensity based on slider values
+        img = (np.clip((img-self.slider_min)/
+              (self.slider_max-self.slider_min),0,1)*255).astype(np.uint8)
+        
+        return img
+        #self.displayImage(img, self.loadScreen)
+        
+    def displayImage(self, image_raw, screen_widget):
         ''' Displays single image in a target screenwidget
         '''
+        
+        print (image_raw.shape)
         # standardized code for convering image to 
         # Cat: TODO: is all this formatting necessary? 
         # Cat: TODO: also, can we just cast opencv imshow to the widget?
-        img = ((image-self.data_min)/(self.data_max-self.data_min))*99
-        img = (np.clip((img-self.slider_min)/(self.slider_max-self.slider_min),0,1)*255).astype(np.uint8)
-        qformat=QImage.Format_Grayscale8
+        
         # convert from opencv format to pyqt QImage format
-        img=QImage(img,img.shape[1],img.shape[0],img.strides[0],qformat)
+        qformat=QImage.Format_Grayscale8
+        img=QImage(image_raw,image_raw.shape[1],image_raw.shape[0],
+                                            image_raw.strides[0],qformat)
         pixmap = QtGui.QPixmap(img)
-        pixmap4 = pixmap.scaled(500, 500)
+                    
+        # Stretch image to fit screen 
+        img_width, img_height = image_raw.shape
+        screen_width = screen_widget.frameGeometry().width()
+        screen_height = screen_widget.frameGeometry().height()
 
+        if img_width <= img_height: 
+            pixmap = pixmap.scaled(screen_width, screen_height/
+                                                (img_height/img_width))
+        else:
+            pixmap = pixmap.scaled(screen_width/(img_width/img_height), 
+                                                screen_height)
+                                                
         # self.imgLabel.setPixmap(pixmap4)
-        # self.imgLabel.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+        #screen_widget.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
 
+        screen_widget.setPixmap(pixmap)
 
-
-
-
-
-        screen_widget.setPixmap(pixmap4)
         
-        
-    # *****************************************************
-    # ************ TAB CHANGE - EXECUTE CODE  *************
-    # *****************************************************
-    def onChange(self,i): #changed!
-        print ("Current Tab: ", i)
+    ''' *********************************************************
+        *********************************************************
+        ******************** CAIMAN FUNCTIONS *******************
+        *********************************************************
+        *********************************************************
+    '''
 
 
     def motion_correct_rigid(self, fname):
@@ -296,17 +394,105 @@ class MainW(QMainWindow):
             cm.cluster.setup_cluster(
                 backend='local', n_processes=None, single_thread=False)
 
+    ''' *********************************************************
+        *********************************************************
+        ******************** TAB EXECUTE FUNCTION ***************
+        *********************************************************
+        *********************************************************
+    '''
+    def onChange(self,i): #changed!
+        print ("Current Tab: ", i)
 
+
+    ''' *********************************************************
+        *********************************************************
+        **************** MATPLOTLIB FUNCTIONS *******************
+        *********************************************************
+        *********************************************************
+    '''
+
+    def show_postProcScreenTraces(self):
+        
+        self.postProcScreenTraces.setAlignment(QtCore.Qt.AlignCenter)
+
+        dpi = 100
+        self.ctr=0
+        width = self.postProcScreenTraces.frameGeometry().width()/float(dpi)*.99
+        height = self.postProcScreenTraces.frameGeometry().height()/float(dpi)*.99
+        print (width, height)
+        sc = MyDynamicMplCanvas(self.postProcScreenTraces, width=width, 
+                                                        height=height, dpi=dpi)
+                                                        
+                                                        
+#***********************************************************************
+#************************ MATPLOTLIB CLASSES *************************
+#***********************************************************************
+class MyMplCanvas(FigureCanvas):
+    """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
+
+    def __init__(self, parent=None, width=7, height=2, dpi=43):
+        self.fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = self.fig.add_subplot(111)
+
+        self.compute_initial_figure()
+
+        FigureCanvas.__init__(self, self.fig)
+        self.setParent(parent)
+
+        FigureCanvas.setSizePolicy(self,
+                                   QtWidgets.QSizePolicy.Expanding,
+                                   QtWidgets.QSizePolicy.Expanding)
+        FigureCanvas.updateGeometry(self)
+
+    def compute_initial_figure(self):
+        pass
+
+
+class MyStaticMplCanvas(MyMplCanvas):
+    """Simple canvas with a sine plot."""
+
+    def compute_initial_figure(self):
+        t = arange(0.0, 3.0, 0.01)
+        s = sin(2*pi*t)
+        self.axes.plot(t, s)
+        self.fig.tight_layout()
+
+
+class MyDynamicMplCanvas(MyMplCanvas):
+    """A canvas that updates itself every second with a new plot."""
+
+    def __init__(self, *args, **kwargs):
+        MyMplCanvas.__init__(self, *args, **kwargs)
+        timer = QtCore.QTimer(self)
+        #timer.timeout.connect(self.update_figure)
+        timer.start(10)
+        self.ctr=0
+        self.axes.set_ylim(0,1000)
+
+    def compute_initial_figure(self):
+        self.axes.plot([0, 1, 2, 3], [1, 2, 0, 4], 'r')
+
+    def update_figure(self):
+        # Build a list of 4 random integers between 0 and 10 (both inclusive)
+        self.axes.cla()
+        print ("Plotting: ", self.ctr)
+        length = 10000
+        x = np.arange(length)
+        for k in range(1):
+            y = np.random.randint(0, 1000,length)
+            self.axes.plot(x,y,c=np.random.rand(3,))
+        self.draw()
+        self.ctr+=1
+    
+    
     
 
 app = QApplication(sys.argv)
+
 window=MainW()
-window.setWindowTitle('Test')
+window.setWindowTitle('CaImAn GUI V0.1 (Berlusconi)')
 window.show()
 sys.exit(app.exec_())
-
-
-
 
 
 
