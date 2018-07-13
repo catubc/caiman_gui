@@ -288,7 +288,7 @@ Movie</string>
        <string>View average</string>
       </property>
      </widget>
-     <widget class="QComboBox" name="comboBox">
+     <widget class="QComboBox" name="loadComboBoxSelectAnalMode">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -329,6 +329,19 @@ Movie</string>
       </property>
       <property name="text">
        <string>Analysis mode</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="loadButtonViewCorrImage">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>520</y>
+        <width>121</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>View corr image</string>
       </property>
      </widget>
     </widget>
@@ -393,11 +406,11 @@ Movie</string>
         <x>0</x>
         <y>10</y>
         <width>171</width>
-        <height>421</height>
+        <height>461</height>
        </rect>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_5">
        <attribute name="title">
@@ -407,7 +420,7 @@ Movie</string>
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>360</y>
+          <y>390</y>
           <width>151</width>
           <height>41</height>
          </rect>
@@ -416,52 +429,94 @@ Movie</string>
          <string>Run Rigid Correction</string>
         </property>
        </widget>
-       <widget class="QWidget" name="">
+       <widget class="QLineEdit" name="motionRigidLineEditHPFilterSize">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>20</y>
-          <width>127</width>
-          <height>102</height>
+          <y>164</y>
+          <width>125</width>
+          <height>21</height>
          </rect>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
-          <widget class="QLabel" name="label_21">
-           <property name="text">
-            <string>Max shifts</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="motionRigidLineEditMaxShifts">
-           <property name="text">
-            <string>12</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_22">
-           <property name="text">
-            <string># splits in time</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="motionRigidLineEditSplits">
-           <property name="text">
-            <string>10</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <property name="text">
+         <string>20</string>
+        </property>
        </widget>
-       <zorder>motionRunRigid</zorder>
-       <zorder>motionRigidLineEditMaxShifts</zorder>
-       <zorder>motionRigidLineEditSplits</zorder>
+       <widget class="QLabel" name="label_43">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>140</y>
+          <width>131</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>High pass filter size</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_21">
+        <property name="geometry">
+         <rect>
+          <x>21</x>
+          <y>21</y>
+          <width>63</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Max shifts</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="motionRigidLineEditMaxShifts">
+        <property name="geometry">
+         <rect>
+          <x>21</x>
+          <y>45</y>
+          <width>125</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>12,12</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_22">
+        <property name="geometry">
+         <rect>
+          <x>21</x>
+          <y>76</y>
+          <width>89</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string># splits in time</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="motionRigidLineEditSplits">
+        <property name="geometry">
+         <rect>
+          <x>21</x>
+          <y>100</y>
+          <width>125</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>10</string>
+        </property>
+       </widget>
        <zorder>label_21</zorder>
+       <zorder>motionRigidLineEditMaxShifts</zorder>
        <zorder>label_22</zorder>
-       <zorder>label_22</zorder>
+       <zorder>motionRigidLineEditSplits</zorder>
+       <zorder>motionRunRigid</zorder>
+       <zorder>motionRigidLineEditHPFilterSize</zorder>
+       <zorder>label_43</zorder>
       </widget>
       <widget class="QWidget" name="tab_6">
        <attribute name="title">
@@ -471,7 +526,7 @@ Movie</string>
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>370</y>
+          <y>410</y>
           <width>161</width>
           <height>21</height>
          </rect>
@@ -480,101 +535,187 @@ Movie</string>
          <string>Run PW Rigid Correction</string>
         </property>
        </widget>
-       <widget class="QWidget" name="">
+       <widget class="QLabel" name="label_44">
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>21</y>
-          <width>127</width>
-          <height>322</height>
+          <y>346</y>
+          <width>121</width>
+          <height>16</height>
          </rect>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_2">
-         <item>
-          <widget class="QLabel" name="label_23">
-           <property name="text">
-            <string>Max shifts</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="motionPWRigidLineEditMaxShifts">
-           <property name="text">
-            <string>12</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_26">
-           <property name="text">
-            <string>Strides</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="motionPWRigidLineEditStrides">
-           <property name="text">
-            <string>48</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_25">
-           <property name="text">
-            <string>Overlaps</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="motionPWRigidLineEditOverlap">
-           <property name="text">
-            <string>24</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_27">
-           <property name="text">
-            <string>Upsample factor</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="motionPWRigidLineEditUpFactor">
-           <property name="text">
-            <string>4</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_28">
-           <property name="text">
-            <string>Max Deviation Rigid</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="motionPWRigidLineEditMaxDevRigid">
-           <property name="text">
-            <string>3</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_24">
-           <property name="text">
-            <string># splits in time</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="motionPWRigidLineEditSplits">
-           <property name="text">
-            <string>10</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <property name="text">
+         <string>High pass filter size</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="motionPWRigidLineEditHPFilterSize">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>370</y>
+          <width>125</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>20</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_23">
+        <property name="geometry">
+         <rect>
+          <x>21</x>
+          <y>11</y>
+          <width>63</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Max shifts</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="motionPWRigidLineEditMaxShifts">
+        <property name="geometry">
+         <rect>
+          <x>21</x>
+          <y>35</y>
+          <width>125</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>12,12</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_26">
+        <property name="geometry">
+         <rect>
+          <x>21</x>
+          <y>66</y>
+          <width>43</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Strides</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="motionPWRigidLineEditStrides">
+        <property name="geometry">
+         <rect>
+          <x>21</x>
+          <y>90</y>
+          <width>125</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>48,48</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_25">
+        <property name="geometry">
+         <rect>
+          <x>21</x>
+          <y>121</y>
+          <width>54</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Overlaps</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="motionPWRigidLineEditOverlap">
+        <property name="geometry">
+         <rect>
+          <x>21</x>
+          <y>145</y>
+          <width>125</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>24,24</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_27">
+        <property name="geometry">
+         <rect>
+          <x>21</x>
+          <y>176</y>
+          <width>101</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Upsample factor</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="motionPWRigidLineEditUpFactor">
+        <property name="geometry">
+         <rect>
+          <x>21</x>
+          <y>200</y>
+          <width>125</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>4</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_28">
+        <property name="geometry">
+         <rect>
+          <x>21</x>
+          <y>231</y>
+          <width>120</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Max Deviation Rigid</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="motionPWRigidLineEditMaxDevRigid">
+        <property name="geometry">
+         <rect>
+          <x>21</x>
+          <y>255</y>
+          <width>125</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>3</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_24">
+        <property name="geometry">
+         <rect>
+          <x>21</x>
+          <y>286</y>
+          <width>89</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string># splits in time</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="motionPWRigidLineEditSplits">
+        <property name="geometry">
+         <rect>
+          <x>21</x>
+          <y>310</y>
+          <width>125</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>10</string>
+        </property>
        </widget>
       </widget>
      </widget>
@@ -676,21 +817,1267 @@ Movie</string>
        <string>View Shifts</string>
       </property>
      </widget>
+     <widget class="QPushButton" name="motionButtonSaveShifts">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>750</y>
+        <width>101</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Save Shifts</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_mmap">
      <attribute name="title">
       <string>MemoryMapping</string>
      </attribute>
+     <widget class="QListWidget" name="memmapListFiles">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>10</y>
+        <width>511</width>
+        <height>261</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="memmapComboListSelectFiles">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>40</y>
+        <width>171</width>
+        <height>26</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>Motion Correct Panel</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Load Panel</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QLabel" name="label_31">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>10</y>
+        <width>101</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Use files from</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_32">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>160</y>
+        <width>121</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Resize (x, y, time)</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="memmapButtomStartMemmap">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>80</y>
+        <width>141</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Create mmap file</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="memmapLineEditResize">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>190</y>
+        <width>71</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>1,1,1</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="memmapLineEditSlice">
+      <property name="geometry">
+       <rect>
+        <x>190</x>
+        <y>310</y>
+        <width>371</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>[(None,None,None), (None,None,None), (None,None,None)]</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_33">
+      <property name="geometry">
+       <rect>
+        <x>190</x>
+        <y>280</y>
+        <width>181</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Slice Each File (time, x, y)</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_34">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>280</y>
+        <width>101</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Add to movie</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="memmapLineEditAddToMov">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>310</y>
+        <width>141</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>0</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_35">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>220</y>
+        <width>161</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>N processes</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="memmapLineEditNProc">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>250</y>
+        <width>141</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>0</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_36">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>110</y>
+        <width>161</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>N chunks</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="memmapLineEditNChunks">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>140</y>
+        <width>141</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>0</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_cnmf">
      <attribute name="title">
       <string>CNMF</string>
      </attribute>
+     <widget class="QListWidget" name="cnmfListFiles">
+      <property name="geometry">
+       <rect>
+        <x>190</x>
+        <y>10</y>
+        <width>511</width>
+        <height>121</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cnmfButtonFilesLoad">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>20</y>
+        <width>99</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Load File</string>
+      </property>
+     </widget>
+     <widget class="QTabWidget" name="tabWidget_2">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>520</x>
+        <y>140</y>
+        <width>171</width>
+        <height>221</height>
+       </rect>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tab_7">
+       <attribute name="title">
+        <string>Full FOV</string>
+       </attribute>
+       <widget class="QPushButton" name="cnmfFOVButtonRunCNMF">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>150</y>
+          <width>101</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Run CNMF</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="cnmfFOvLineEditNumCompPerPatch">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>40</y>
+          <width>81</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>30</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_47">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>161</width>
+          <height>30</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string># components</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab_8">
+       <attribute name="title">
+        <string>Patches</string>
+       </attribute>
+       <widget class="QPushButton" name="cnmfPatchesButtonRunCNMF">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>160</y>
+          <width>141</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Run CNMF Patches</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="cnmfPatchesLineEditSizePatch">
+        <property name="geometry">
+         <rect>
+          <x>109</x>
+          <y>0</y>
+          <width>41</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>30</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_39">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>-10</y>
+          <width>91</width>
+          <height>30</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Size Patch</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="cnmfPatchesLineEditSizeOverlap">
+        <property name="geometry">
+         <rect>
+          <x>110</x>
+          <y>30</y>
+          <width>41</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>8</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_40">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>20</y>
+          <width>91</width>
+          <height>30</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Overlap Patch</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="cnmfPatchesLineEditNumCompPerPatch">
+        <property name="geometry">
+         <rect>
+          <x>110</x>
+          <y>80</y>
+          <width>41</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>4</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_41">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>161</width>
+          <height>30</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string># components per patch</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="cnmfPatchesButtonRunInit">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>110</y>
+          <width>141</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Run Initialization</string>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+     <widget class="QComboBox" name="cnmfComboBoxInitMethod">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>180</y>
+        <width>111</width>
+        <height>26</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>greedy_roi</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>corr_pnr</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>sparse_nmf</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QLabel" name="label_42">
+      <property name="geometry">
+       <rect>
+        <x>250</x>
+        <y>170</y>
+        <width>51</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Method</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="cnmfLineEditNumBckgr">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>160</y>
+        <width>31</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>2</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_38">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>150</y>
+        <width>161</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Background Number </string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="cnmfLineEditNeuronSize">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>70</y>
+        <width>21</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>10</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_37">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>60</y>
+        <width>121</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Neuron size (pixels)</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_45">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>120</y>
+        <width>161</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Merge threshold</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="cnmfLineEditOrderAR">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>100</y>
+        <width>21</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>1</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_46">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>90</y>
+        <width>121</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Order AR model</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="cnmfLineEditMergeThr">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>130</y>
+        <width>31</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>0.8</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="cnmfLineEditInitDSTime">
+      <property name="geometry">
+       <rect>
+        <x>390</x>
+        <y>210</y>
+        <width>31</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>2</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_48">
+      <property name="geometry">
+       <rect>
+        <x>250</x>
+        <y>140</y>
+        <width>131</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Initialization&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::AutoText</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_49">
+      <property name="geometry">
+       <rect>
+        <x>250</x>
+        <y>200</y>
+        <width>131</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Downsample time</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="cnmfLineEditInitDSSpace">
+      <property name="geometry">
+       <rect>
+        <x>390</x>
+        <y>240</y>
+        <width>31</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>1</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_50">
+      <property name="geometry">
+       <rect>
+        <x>250</x>
+        <y>230</y>
+        <width>131</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Downsample space</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_51">
+      <property name="geometry">
+       <rect>
+        <x>250</x>
+        <y>290</y>
+        <width>131</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Min Peak/Noise ratio</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="cnmfLineEditInitMinPNR">
+      <property name="geometry">
+       <rect>
+        <x>390</x>
+        <y>300</y>
+        <width>31</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>10</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_52">
+      <property name="geometry">
+       <rect>
+        <x>250</x>
+        <y>260</y>
+        <width>131</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Min Correlation</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="cnmfLineEditInitMinCorr">
+      <property name="geometry">
+       <rect>
+        <x>390</x>
+        <y>270</y>
+        <width>31</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>0.8</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="cnmfCheckBoxLowRankBckgr">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>250</y>
+        <width>161</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Low Rank Background</string>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="cnmfCheckBoxHighPass">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>270</y>
+        <width>161</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>High pass frames</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_53">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>180</y>
+        <width>141</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Background DS space</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="cnmfLineEditInitBckgrDS">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>190</y>
+        <width>31</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>2</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="cnmfLineEditInitRingSize">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>220</y>
+        <width>31</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>1.4</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_54">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>210</y>
+        <width>141</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Ring size factor</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="postProcScreenCorrImage_2">
+      <property name="geometry">
+       <rect>
+        <x>390</x>
+        <y>470</y>
+        <width>311</width>
+        <height>321</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Panel</enum>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="postProcScreenFrames_2">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>470</y>
+        <width>321</width>
+        <height>321</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Panel</enum>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_55">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>440</y>
+        <width>71</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Correlation</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_56">
+      <property name="geometry">
+       <rect>
+        <x>490</x>
+        <y>440</y>
+        <width>161</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Peak to noise ratio</string>
+      </property>
+     </widget>
+     <widget class="QScrollBar" name="CNMFVerticalScrollBarCorr">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>540</y>
+        <width>16</width>
+        <height>160</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="QScrollBar" name="CNMFVerticalScrollBarPNR">
+      <property name="geometry">
+       <rect>
+        <x>370</x>
+        <y>540</y>
+        <width>16</width>
+        <height>160</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cnmfButtonFilesCorrImage">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>390</y>
+        <width>141</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Correlation Image</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cnmfButtonFilesPNRImage">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>390</y>
+        <width>141</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>PNR Image</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_pp">
      <attribute name="title">
       <string>PostProcessing</string>
      </attribute>
+     <widget class="QLabel" name="postProcScreenFrames">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>341</width>
+        <height>361</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Panel</enum>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="postProcScreenCorrImage">
+      <property name="geometry">
+       <rect>
+        <x>360</x>
+        <y>20</y>
+        <width>331</width>
+        <height>361</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Panel</enum>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="postProcScreenComponents">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>410</y>
+        <width>151</width>
+        <height>151</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Panel</enum>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="postProcScreenTraces">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>410</y>
+        <width>521</width>
+        <height>151</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Panel</enum>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_11">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>570</y>
+        <width>110</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Frame Select</string>
+      </property>
+     </widget>
+     <widget class="QSlider" name="postProcSliderFrame">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>570</y>
+        <width>400</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QSlider" name="postProcSelectComponent">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>600</y>
+        <width>400</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_12">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>630</y>
+        <width>101</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>SNR min</string>
+      </property>
+     </widget>
+     <widget class="QSlider" name="postProcSliderSNR_MIN">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>630</y>
+        <width>391</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_13">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>600</y>
+        <width>110</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Component Select</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_14">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>660</y>
+        <width>101</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>CNN min</string>
+      </property>
+     </widget>
+     <widget class="QSlider" name="postProcSliderCNN_MIN">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>660</y>
+        <width>391</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_15">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>690</y>
+        <width>101</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>RVAL min</string>
+      </property>
+     </widget>
+     <widget class="QSlider" name="postProcSliderRVAL_MIN">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>690</y>
+        <width>391</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_16">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>750</y>
+        <width>101</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>CNN suff</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_17">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>780</y>
+        <width>101</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>RVAL suff</string>
+      </property>
+     </widget>
+     <widget class="QSlider" name="postProcSliderRVAL_SUFF">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>780</y>
+        <width>391</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_18">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>720</y>
+        <width>101</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>SNR suff</string>
+      </property>
+     </widget>
+     <widget class="QSlider" name="postProcSliderSNR_SUFF">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>720</y>
+        <width>391</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QSlider" name="postProcSliderCNN_SUFF">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>750</y>
+        <width>391</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="postProcLineEditFrame">
+      <property name="geometry">
+       <rect>
+        <x>570</x>
+        <y>570</y>
+        <width>91</width>
+        <height>21</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="postProcLineEditComp">
+      <property name="geometry">
+       <rect>
+        <x>570</x>
+        <y>600</y>
+        <width>91</width>
+        <height>21</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="postProcButtonDelComp">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>640</y>
+        <width>141</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Delete component</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="postProcButtonAddComp">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>680</y>
+        <width>141</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Add component</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="postProcButtonSaveObj">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>720</y>
+        <width>141</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Save object</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="postProcButtonDelComp_2">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>760</y>
+        <width>141</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Export component</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_19">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>0</y>
+        <width>51</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Movie</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_20">
+      <property name="geometry">
+       <rect>
+        <x>450</x>
+        <y>0</y>
+        <width>141</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Selected Components</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_29">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>390</y>
+        <width>81</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Component</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_30">
+      <property name="geometry">
+       <rect>
+        <x>390</x>
+        <y>390</y>
+        <width>81</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Trace</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_finrev">
      <attribute name="title">
