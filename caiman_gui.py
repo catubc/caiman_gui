@@ -21,6 +21,7 @@ class MainW(QMainWindow):
         
         self.image = []
         self.movie = []
+        self.files = []
         self.playmovie_flag=True
         self.data_min = None
         self.data_max = None
@@ -100,10 +101,13 @@ class MainW(QMainWindow):
     @pyqtSlot()
     def on_motionRunPWRigid_clicked(self):
         print('Running pw-rigid motion correction on the following files')
-        print(self.files)
-        self.motion_correct_pwrigid(self.files)
-        for fls in self.motion_correct.fname_tot_els:
-            self.motionList.addItem(fls)
+        if len(self.files)>0:
+            print(self.files)
+            self.motion_correct_pwrigid(self.files)
+            for fls in self.motion_correct.fname_tot_els:
+                self.motionList.addItem(fls)
+        else:
+            print("no files loaded")
         
     @pyqtSlot()
     def on_motionMovieLoad_clicked(self):
@@ -126,7 +130,7 @@ class MainW(QMainWindow):
         ''' 
 
         # load movie
-        movie = cm.load('/Users/agiovann/SOFTWARE/CaImAn/example_movies/demoMovie.tif')
+        movie = cm.load('/home/cat/code/CaImAn/example_movies/demoMovie.tif')
 
 
         self.movie = movie
