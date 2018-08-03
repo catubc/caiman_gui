@@ -13,6 +13,10 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import (QDialog, QApplication, QMainWindow, QSlider,
                               QFileDialog, QTabWidget)
+
+from PyQt5.QtQuick import QQuickView
+from PyQt5.QtCore import QUrl
+
 from PyQt5.uic import loadUi
 
 import caiman as cm
@@ -54,6 +58,14 @@ class MainW(QMainWindow):
         
         # initialize postProcessing data
         self.show_postProcScreenTraces()
+        
+        
+        ## double slider
+        # Cat: TODO: implement at another time, ; doesn't intergrate naturaly with qt-designer
+        #appLabel = QQuickView()
+        #appLabel.setSource(QUrl('rangeslider.qml'))
+        #appLabel.move(600,600)
+        
         
     ''' *********************************************************
         *********************************************************
@@ -140,9 +152,11 @@ class MainW(QMainWindow):
 
         # load movie
         print ("Loading movie")
-        movie = cm.load('/home/cat/code/CaImAn/example_movies/demoMovie.tif')
-
-        self.movie = movie
+        movie = None
+        #movie = cm.load('/home/cat/code/CaImAn/example_movies/demoMovie.tif')
+        movie = cm.load('/home/cat/Downloads/Yr_0001_d1_512_d2_512_d3_1_order_C_frames_3000_.mmap')
+        
+        self.movie = np.array(movie,order='C')
         self.data_min = np.float(movie.min())
         self.data_max = np.float(movie.max())
 
@@ -219,6 +233,13 @@ class MainW(QMainWindow):
     def loadSliderMinIntensity_func(self):
         # call the generic slider with slider ID and target widget ID
         self.slider_min = np.float(self.loadSliderMinIntensity.value())
+        #self.slider_max = np.float(self.loadSliderMaxIntensity.value())
+        
+        # don't allow sliders to overlap
+        if self.slider_min>=self.slider_max:
+            self.loadSliderMinIntensity.setValue(self.slider_max)
+            #self.loadSliderFrame.setValue(slider_widget.value())
+            return
 
         img = self.update_image()
         self.generic_slider_func(img,self.loadScreen)
@@ -226,7 +247,12 @@ class MainW(QMainWindow):
     def loadSliderMaxIntensity_func(self):
         # call the generic slider with slider ID and target widget ID
         self.slider_max = np.float(self.loadSliderMaxIntensity.value())
-
+        
+        # don't allow sliders to overlap
+        if self.slider_max<=self.slider_min:
+            self.loadSliderMaxIntensity.setValue(self.slider_min)
+            return
+            
         img = self.update_image()
         
         self.generic_slider_func(img,self.loadScreen)
@@ -269,8 +295,8 @@ class MainW(QMainWindow):
         '''
         
         img = self.movie[index]
-        image_out = ((img-self.data_min)/(self.data_max-self.data_min))*99
-        return image_out
+        img = ((img-self.data_min)/(self.data_max-self.data_min))*99
+        return img
         
     def update_image(self):
         # load single image
@@ -291,6 +317,9 @@ class MainW(QMainWindow):
         # standardized code for convering image to 
         # Cat: TODO: is all this formatting necessary? 
         # Cat: TODO: also, can we just cast opencv imshow to the widget?
+        
+        print (image_raw.shape[1],image_raw.shape[0],
+                                            image_raw.strides[0])
         
         # convert from opencv format to pyqt QImage format
         qformat=QImage.Format_Grayscale8
