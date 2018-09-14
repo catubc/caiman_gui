@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>764</width>
+    <width>740</width>
     <height>932</height>
    </rect>
   </property>
@@ -30,7 +30,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab_3">
      <attribute name="title">
@@ -346,7 +346,7 @@ Movie</string>
        </rect>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_5">
        <attribute name="title">
@@ -763,7 +763,7 @@ Movie</string>
        <string>Max Intensity</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="lineEdit">
+     <widget class="QLineEdit" name="motionLineEditFrameId">
       <property name="geometry">
        <rect>
         <x>640</x>
@@ -948,7 +948,7 @@ Movie</string>
        <rect>
         <x>190</x>
         <y>310</y>
-        <width>371</width>
+        <width>511</width>
         <height>21</height>
        </rect>
       </property>
@@ -964,7 +964,7 @@ Movie</string>
        <rect>
         <x>190</x>
         <y>280</y>
-        <width>181</width>
+        <width>221</width>
         <height>30</height>
        </rect>
       </property>
@@ -1113,6 +1113,35 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.SF NS Text';&quot;&gt;	p[wd'asdk'a;lfsjasldmaflkasjdflksjdlk 'l;m/l;m/lafmf;lfma&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
+     <widget class="QLineEdit" name="memmapLineEditAddToMov_2">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>370</y>
+        <width>141</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>0</string>
+      </property>
+      <property name="par_name" stdset="0">
+       <string>border_to_0</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_55">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>340</y>
+        <width>121</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Border pixels</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_cnmf">
      <attribute name="title">
@@ -1150,8 +1179,8 @@ p, li { white-space: pre-wrap; }
        <widget class="QPushButton" name="cnmfFOVButtonRunCNMF">
         <property name="geometry">
          <rect>
-          <x>30</x>
-          <y>150</y>
+          <x>50</x>
+          <y>170</y>
           <width>101</width>
           <height>41</height>
          </rect>
@@ -1294,22 +1323,6 @@ p, li { white-space: pre-wrap; }
          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;# components &lt;br/&gt;per patch&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
-       <widget class="QPushButton" name="cnmfPatchesButtonRunInit">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>20</x>
-          <y>140</y>
-          <width>151</width>
-          <height>41</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Run Initialization</string>
-        </property>
-       </widget>
       </widget>
      </widget>
      <widget class="QComboBox" name="cnmfComboBoxInitMethod">
@@ -1379,7 +1392,7 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>10</x>
         <y>150</y>
-        <width>161</width>
+        <width>181</width>
         <height>30</height>
        </rect>
       </property>
@@ -1392,12 +1405,12 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>180</x>
         <y>70</y>
-        <width>31</width>
+        <width>61</width>
         <height>21</height>
        </rect>
       </property>
       <property name="text">
-       <string>10</string>
+       <string>6, 6</string>
       </property>
       <property name="par_name" stdset="0">
        <string>gSig</string>
@@ -1433,7 +1446,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>150</x>
-        <y>100</y>
+        <y>90</y>
         <width>31</width>
         <height>21</height>
        </rect>
@@ -1614,7 +1627,7 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>10</x>
         <y>250</y>
-        <width>161</width>
+        <width>211</width>
         <height>20</height>
        </rect>
       </property>
@@ -1633,7 +1646,7 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>10</x>
         <y>270</y>
-        <width>161</width>
+        <width>171</width>
         <height>20</height>
        </rect>
       </property>
@@ -1705,70 +1718,12 @@ p, li { white-space: pre-wrap; }
        <string>Ring size factor</string>
       </property>
      </widget>
-     <widget class="QLabel" name="postProcScreenCorrImage_2">
-      <property name="geometry">
-       <rect>
-        <x>390</x>
-        <y>470</y>
-        <width>311</width>
-        <height>321</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::Panel</enum>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="postProcScreenFrames_2">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>470</y>
-        <width>321</width>
-        <height>321</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::Panel</enum>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QScrollBar" name="CNMFVerticalScrollBarCorr">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>540</y>
-        <width>16</width>
-        <height>160</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-     </widget>
-     <widget class="QScrollBar" name="CNMFVerticalScrollBarPNR">
-      <property name="geometry">
-       <rect>
-        <x>370</x>
-        <y>540</y>
-        <width>16</width>
-        <height>160</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-     </widget>
      <widget class="QPushButton" name="cnmfButtonFilesCorrImage">
       <property name="geometry">
        <rect>
-        <x>110</x>
+        <x>10</x>
         <y>430</y>
-        <width>141</width>
+        <width>181</width>
         <height>41</height>
        </rect>
       </property>
@@ -1779,9 +1734,9 @@ p, li { white-space: pre-wrap; }
      <widget class="QPushButton" name="cnmfButtonFilesPNRImage">
       <property name="geometry">
        <rect>
-        <x>450</x>
+        <x>350</x>
         <y>430</y>
-        <width>201</width>
+        <width>241</width>
         <height>41</height>
        </rect>
       </property>
@@ -1805,12 +1760,12 @@ p, li { white-space: pre-wrap; }
       </item>
       <item>
        <property name="text">
-        <string>Load panel</string>
+        <string>Memory mapping panel</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Memory mapping panel</string>
+        <string>Load panel</string>
        </property>
       </item>
      </widget>
@@ -1825,32 +1780,6 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="text">
        <string>Load single file from:</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="cnmfLineEditNumCorrThr">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>500</y>
-        <width>16</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>2</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="cnmfLineEditNumPNRThr">
-      <property name="geometry">
-       <rect>
-        <x>370</x>
-        <y>500</y>
-        <width>16</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>2</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_8">
@@ -1871,7 +1800,7 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>150</x>
         <y>330</y>
-        <width>31</width>
+        <width>51</width>
         <height>21</height>
        </rect>
       </property>
@@ -1958,6 +1887,58 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="text">
        <string>Saved file</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_17">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>470</y>
+        <width>81</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>max map</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="cnmfMaxCorrImage">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>480</y>
+        <width>51</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>0.75</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="gSigFilter">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>480</y>
+        <width>51</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>4</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_18">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>470</y>
+        <width>121</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Size Filter</string>
       </property>
      </widget>
     </widget>

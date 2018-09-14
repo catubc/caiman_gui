@@ -51,6 +51,7 @@ class MainW(QMainWindow):
         self.loadSliderFrame.valueChanged.connect(self.loadSliderFrame_func)
         self.loadSliderMinIntensity.valueChanged.connect(self.loadSliderMinIntensity_func)
         self.loadSliderMaxIntensity.valueChanged.connect(self.loadSliderMaxIntensity_func)
+        self.movie_loadScreen=None
 
         # initalize motion tab sliders
         self.motionSliderMaxIntensity.setValue(99)
@@ -58,6 +59,7 @@ class MainW(QMainWindow):
         self.motionSliderFrame.valueChanged.connect(self.motionSliderFrame_func)
         self.motionSliderMinIntensity.valueChanged.connect(self.motionSliderMinIntensity_func)
         self.motionSliderMaxIntensity.valueChanged.connect(self.motionSliderMaxIntensity_func)
+        self.movie_motionScreen=None
         
         # initialize postProcessing data
         self.show_postProcScreenTraces()
@@ -97,8 +99,8 @@ class MainW(QMainWindow):
     @pyqtSlot()
     def on_loadMovieLoad_clicked(self):
         # send slider, load list and target screen
-        self.generic_movie_load(self.loadSliderFrame, self.loadList,
-                                                        self.loadScreen)
+        self.movie_loadScreen = self.generic_movie_load(self.loadSliderFrame, 
+                        self.loadList, self.loadScreen)
     @pyqtSlot()
     def on_loadButtonViewCorrImage_clicked(self):
         self.correlation_image = self.movie.local_correlations(eight_neighbours=True,swap_dim=False)
@@ -151,25 +153,18 @@ class MainW(QMainWindow):
 
     @pyqtSlot()
     def on_motionMovieLoad_clicked(self):
-        # send slider, load list and target screen
-        #self.generic_movie_load(self.motionSliderFrame, self.motionList,
-        #                                                self.motionScreen)
 
         if len(self.motionList.selectedIndexes())>0:
             fname = self.loadList.selectedIndexes()[0].data()
-            self.loadmovie(fname)
-            movie1 = self.movie
+            movie1 = self.loadmovie(fname)
             
             fname = self.motionList.selectedIndexes()[0].data()
-            self.loadmovie(fname)
-            movie2 = self.movie
+            movie2 = self.loadmovie(fname)
             
-            self.movie = np.concatenate((movie1,movie2), axis=2)
-            print (movie1.shape)
-            print (movie2.shape)
-            print (self.movie.shape)
+            self.movie_motionScreen = np.concatenate((movie1,movie2), axis=2)
+
             # set frame 0 on screen
-            image = self.normalize_frame(self.movie[self.motionSliderFrame.value()],
+            image = self.normalize_frame(self.movie_motionScreen[self.motionSliderFrame.value()],
                                                             norm_global=True)
 
             print ("  image size: ", image.shape)
@@ -177,14 +172,14 @@ class MainW(QMainWindow):
 
             # set slider range based on size of movie
             # Cat: TODO: the shape[0] value may not always be correct
-            self.motionSliderFrame.setRange(0,self.movie.shape[0]-1)
+            self.motionSliderFrame.setRange(0,self.movie_motionScreen.shape[0]-1)
 
         else:
             print (list_widget.selectedIndexes())
             QMessageBox.about(self, "Error", "No file selected, please select in text field.")
             print ("No file selected...")
 
-
+        
 
 
     ''' *********************************************************
@@ -199,30 +194,33 @@ class MainW(QMainWindow):
         ''' Load movie from disk using opencv
             TO DO: may need to write .tif readers etc.
                     OR use caiman only to read imaging files
+                    
+            Note; movie is loaded and pased into its own container
+                - i.e. each screen will have its own movie array in general
         '''
 
         # load movie
         print ("  loading movie...")
-
         movie = cm.load(fname, in_memory=True)
 
-        self.movie = np.array(movie)
-
+        # Cat: TODO: fix the mmem map issue her
+        print ("  TODO: fix memm map for motion correction files ...")
         temp_fname = '/home/cat/code/caiman_gui/temp.npy'
-        np.save(temp_fname, self.movie)
-        self.movie = np.load(temp_fname)
+        np.save(temp_fname, movie)
+        movie = np.load(temp_fname)
 
         self.data_min = np.float(movie.min())
         self.data_max = np.float(movie.max())
 
-        print ("  finished loading movie, size: ", self.movie.shape)
+        print ("  finished loading movie, size: ", movie.shape)
 
-
+        return movie
+        
     def playmovie_loadscreen(self):
         # load next frame and compute movie counter
 
-        self.movie_ctr=(self.movie_ctr+1)%self.movie.shape[0]
-        image = self.normalize_frame(self.movie[self.movie_ctr],norm_global=True)
+        self.movie_ctr = (self.movie_ctr+1)%self.movie_loadScreen.shape[0]
+        image = self.normalize_frame(self.movie_loadScreen[self.movie_ctr],norm_global=True)
 
         # update slider location with current frame index
         self.loadSliderFrame.setValue(self.movie_ctr)
@@ -233,8 +231,7 @@ class MainW(QMainWindow):
         self.displayImage(image, self.loadScreen)
 
 
-    def generic_movie_load(self, slider_widget, list_widget,
-                                                        screen_widget):
+    def generic_movie_load(self, slider_widget, list_widget, screen_widget):
         ''' Load movie, initialize first frame in screen widget and
             find length of image stack to assign to slider range.
         '''
@@ -242,23 +239,24 @@ class MainW(QMainWindow):
         if len(list_widget.selectedIndexes())>0:
             fname = list_widget.selectedIndexes()[0].data()
 
-            self.loadmovie(fname)
+            movie_array = self.loadmovie(fname)
             
             # set frame 0 on screen
-            image = self.normalize_frame(self.movie[self.loadSliderFrame.value()],
+            image = self.normalize_frame(movie_array[self.loadSliderFrame.value()],
                                                             norm_global=True)
 
             self.displayImage(image, screen_widget)
 
             # set slider range based on size of movie
             # Cat: TODO: the shape[0] value may not always be correct
-            slider_widget.setRange(0,self.movie.shape[0]-1)
+            slider_widget.setRange(0,movie_array.shape[0]-1)
 
         else:
             print (list_widget.selectedIndexes())
             QMessageBox.about(self, "Error", "No file selected, please select in text field.")
             print ("No file selected...")
 
+        return movie_array
 
     ''' *********************************************************
         *********************************************************
@@ -273,10 +271,11 @@ class MainW(QMainWindow):
         self.loadLineEditFrameId.setText(str(self.movie_ctr))
 
         # load img
-        img = self.update_image()
+        img = self.update_image(self.loadSliderFrame, self.movie_loadScreen)
 
         # call the generic slider with slider ID and target widget ID
-        self.generic_slider_func(img,self.loadScreen)
+        self.generic_slider_func(img,self.loadSliderFrame, self.loadScreen, 
+                                                    self.movie_loadScreen)
 
     def loadSliderMinIntensity_func(self):
         # call the generic slider with slider ID and target widget ID
@@ -287,8 +286,9 @@ class MainW(QMainWindow):
             self.loadSliderMinIntensity.setValue(self.slider_max)
             return
 
-        img = self.update_image()
-        self.generic_slider_func(img,self.loadScreen)
+        img = self.update_image(self.loadSliderFrame, self.movie_loadScreen)
+        self.generic_slider_func(img, self.loadSliderFrame, 
+                                    self.loadScreen, self.movie_loadScreen)
 
     def loadSliderMaxIntensity_func(self):
         # call the generic slider with slider ID and target widget ID
@@ -299,9 +299,10 @@ class MainW(QMainWindow):
             self.loadSliderMaxIntensity.setValue(self.slider_min)
             return
             
-        img = self.update_image()
+        img = self.update_image(self.loadSliderFrame, self.movie_loadScreen)
 
-        self.generic_slider_func(img,self.loadScreen)
+        self.generic_slider_func(img, self.loadSliderFrame, 
+                                        self.loadScreen, self.movie_loadScreen)
 
 
     def motionSliderMinIntensity_func(self):
@@ -313,8 +314,9 @@ class MainW(QMainWindow):
             self.motionSliderMinIntensity.setValue(self.slider_max)
             return
 
-        img = self.update_image()
-        self.generic_slider_func(img,self.motionScreen)
+        img = self.update_image(self.motionSliderFrame, self.movie_motionScreen)
+        self.generic_slider_func(img, self.motionSliderFrame, 
+                                self.motionScreen, self.movie_motionScreen)
 
 
     def motionSliderMaxIntensity_func(self):
@@ -326,9 +328,10 @@ class MainW(QMainWindow):
             self.motionSliderMaxIntensity.setValue(self.slider_min)
             return
             
-        img = self.update_image()
+        img = self.update_image(self.motionSliderFrame, self.movie_motionScreen)
 
-        self.generic_slider_func(img,self.motionScreen)
+        self.generic_slider_func(img,self.motionSliderFrame, 
+                                self.motionScreen, self.movie_motionScreen)
 
 
     def motionSliderFrame_func(self):
@@ -337,24 +340,23 @@ class MainW(QMainWindow):
         self.motionLineEditFrameId.setText(str(self.movie_ctr))
 
         # load img
-        img = self.update_image()
-        self.generic_slider_func(img, self.motionScreen)
-                                #image, screen_widget):
+        img = self.update_image(self.motionSliderFrame, self.movie_motionScreen)
+        self.generic_slider_func(img, self.motionSliderFrame, 
+                            self.motionScreen, self.movie_motionScreen)
                 
-        #img = self.update_image()
-        #self.generic_slider_func(img,self.motionScreen)
-        
-    def generic_slider_func(self, image, screen_widget):
+                        
+    def generic_slider_func(self, image, slider_widget, screen_widget,
+                            movie_array):
         ''' Takes slider widget and its value and displays in target
             screen widget
         '''
         # check to see if movie loaded
-        if len(self.movie)==0:
+        if len(movie_array)==0:
             print ("No movie loaded ...")
             return
 
         # display frame
-        img = self.update_image()
+        img = self.update_image(slider_widget, movie_array)
 
         self.displayImage(image, screen_widget)
 
@@ -376,12 +378,11 @@ class MainW(QMainWindow):
         return img
         
 
-    def update_image(self, img = None):
+    def update_image(self, slider_widget, movie_array, img=None):
 
         # load single image
         if img is None:
-            img = self.movie[self.loadSliderFrame.value()]
-
+            img = movie_array[slider_widget.value()]
 
         # set intensity based on slider values
         img = self.normalize_frame(img,norm_global=True)
@@ -402,12 +403,6 @@ class MainW(QMainWindow):
         #np.save(fname, image_raw)
         #image_raw = np.load(fname)
                 
-        #print (type(image_raw))
-        #print (type(image_raw[0]))
-        #print (type(image_raw[0][0]))
-        print ("  img size, and strides: ", image_raw.shape[1],
-                    image_raw.shape[0], image_raw.strides[0])
-        
         # convert from opencv format to pyqt QImage format
         qformat=QImage.Format_Grayscale8
 
@@ -423,13 +418,13 @@ class MainW(QMainWindow):
         screen_width = screen_widget.frameGeometry().width()
         screen_height = screen_widget.frameGeometry().height()
 
-        if img_width <= img_height:
-            pixmap = pixmap.scaled(screen_width, screen_height/
-                                                (img_height/img_width))
+        if screen_width/img_width*img_height > screen_height: 
+            pixmap = pixmap.scaled(screen_width, 
+                                   screen_width/img_height*img_width)
         else:
-            pixmap = pixmap.scaled(screen_width/(img_width/img_height),
-                                                screen_height)
-
+            pixmap = pixmap.scaled(screen_height/img_width*img_height,
+                                    screen_height)
+                
         # self.imgLabel.setPixmap(pixmap4)
         #screen_widget.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
 
