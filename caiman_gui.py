@@ -53,8 +53,12 @@ class MainW(QMainWindow):
         self.loadSliderMaxIntensity.valueChanged.connect(self.loadSliderMaxIntensity_func)
 
         # initalize motion tab sliders
+        self.motionSliderMaxIntensity.setValue(99)
+        self.motionSliderMinIntensity.setValue(0)
         self.motionSliderFrame.valueChanged.connect(self.motionSliderFrame_func)
-
+        self.motionSliderMinIntensity.valueChanged.connect(self.motionSliderMinIntensity_func)
+        self.motionSliderMaxIntensity.valueChanged.connect(self.motionSliderMaxIntensity_func)
+        
         # initialize postProcessing data
         self.show_postProcScreenTraces()
 
@@ -77,11 +81,6 @@ class MainW(QMainWindow):
         New buttons created through Qt Designer must have unique names, 
         and then have a @pyqtSlot() decorator above their function call.
     '''
-
-
-
-
-
 
     @pyqtSlot()
     def on_loadFiles_clicked(self):
@@ -108,7 +107,6 @@ class MainW(QMainWindow):
         self.displayImage(img, self.loadScreen)
 
 
-
     @pyqtSlot()
     def on_loadButtonViewAverage_clicked(self):
         img = np.nanmean(self.movie,0)
@@ -120,8 +118,8 @@ class MainW(QMainWindow):
     def on_loadPlayMovie_clicked(self):
         self.timer = QtCore.QTimer(self)
         self.timer.start(10)
-        self.timer.timeout.connect(self.playmovie)
-
+        self.timer.timeout.connect(self.playmovie_loadscreen)
+       
     @pyqtSlot()
     def on_loadStopMovie_clicked(self):
         self.timer.stop()
@@ -154,8 +152,39 @@ class MainW(QMainWindow):
     @pyqtSlot()
     def on_motionMovieLoad_clicked(self):
         # send slider, load list and target screen
-        self.generic_movie_load(self.motionSliderFrame, self.motionList,
-                                                        self.motionScreen)
+        #self.generic_movie_load(self.motionSliderFrame, self.motionList,
+        #                                                self.motionScreen)
+
+        if len(self.motionList.selectedIndexes())>0:
+            fname = self.loadList.selectedIndexes()[0].data()
+            self.loadmovie(fname)
+            movie1 = self.movie
+            
+            fname = self.motionList.selectedIndexes()[0].data()
+            self.loadmovie(fname)
+            movie2 = self.movie
+            
+            self.movie = np.concatenate((movie1,movie2), axis=2)
+            print (movie1.shape)
+            print (movie2.shape)
+            print (self.movie.shape)
+            # set frame 0 on screen
+            image = self.normalize_frame(self.movie[self.motionSliderFrame.value()],
+                                                            norm_global=True)
+
+            print ("  image size: ", image.shape)
+            self.displayImage(image, self.motionScreen)
+
+            # set slider range based on size of movie
+            # Cat: TODO: the shape[0] value may not always be correct
+            self.motionSliderFrame.setRange(0,self.movie.shape[0]-1)
+
+        else:
+            print (list_widget.selectedIndexes())
+            QMessageBox.about(self, "Error", "No file selected, please select in text field.")
+            print ("No file selected...")
+
+
 
 
     ''' *********************************************************
@@ -173,32 +202,36 @@ class MainW(QMainWindow):
         '''
 
         # load movie
-        print ("Loading movie")
+        print ("  loading movie...")
 
-        movie = cm.load(fname)
+        movie = cm.load(fname, in_memory=True)
 
-        self.movie = movie
+        self.movie = np.array(movie)
+
+        temp_fname = '/home/cat/code/caiman_gui/temp.npy'
+        np.save(temp_fname, self.movie)
+        self.movie = np.load(temp_fname)
 
         self.data_min = np.float(movie.min())
         self.data_max = np.float(movie.max())
 
-        print(self.movie.shape)
-        print ("Finished loading")
+        print ("  finished loading movie, size: ", self.movie.shape)
 
-    def playmovie(self):
+
+    def playmovie_loadscreen(self):
         # load next frame and compute movie counter
+
         self.movie_ctr=(self.movie_ctr+1)%self.movie.shape[0]
         image = self.normalize_frame(self.movie[self.movie_ctr],norm_global=True)
 
-
         # update slider location with current frame index
         self.loadSliderFrame.setValue(self.movie_ctr)
-
         # update slide frame box with current frame index
         self.loadLineEditFrameId.setText(str(self.movie_ctr))
 
         # display image
         self.displayImage(image, self.loadScreen)
+
 
     def generic_movie_load(self, slider_widget, list_widget,
                                                         screen_widget):
@@ -209,12 +242,11 @@ class MainW(QMainWindow):
         if len(list_widget.selectedIndexes())>0:
             fname = list_widget.selectedIndexes()[0].data()
 
-            print('Loading movie:' + fname)
             self.loadmovie(fname)
-
+            
             # set frame 0 on screen
-            image = self.normalize_frame(self.movie[self.loadSliderFrame.value()],norm_global=True)
-
+            image = self.normalize_frame(self.movie[self.loadSliderFrame.value()],
+                                                            norm_global=True)
 
             self.displayImage(image, screen_widget)
 
@@ -249,12 +281,10 @@ class MainW(QMainWindow):
     def loadSliderMinIntensity_func(self):
         # call the generic slider with slider ID and target widget ID
         self.slider_min = np.float(self.loadSliderMinIntensity.value())
-        #self.slider_max = np.float(self.loadSliderMaxIntensity.value())
         
         # don't allow sliders to overlap
         if self.slider_min>=self.slider_max:
             self.loadSliderMinIntensity.setValue(self.slider_max)
-            #self.loadSliderFrame.setValue(slider_widget.value())
             return
 
         img = self.update_image()
@@ -273,10 +303,47 @@ class MainW(QMainWindow):
 
         self.generic_slider_func(img,self.loadScreen)
 
+
+    def motionSliderMinIntensity_func(self):
+        # call the generic slider with slider ID and target widget ID
+        self.slider_min = np.float(self.motionSliderMinIntensity.value())
+        
+        # don't allow sliders to overlap
+        if self.slider_min>=self.slider_max:
+            self.motionSliderMinIntensity.setValue(self.slider_max)
+            return
+
+        img = self.update_image()
+        self.generic_slider_func(img,self.motionScreen)
+
+
+    def motionSliderMaxIntensity_func(self):
+        # call the generic slider with slider ID and target widget ID
+        self.slider_max = np.float(self.motionSliderMaxIntensity.value())
+        
+        # don't allow sliders to overlap
+        if self.slider_max<=self.slider_min:
+            self.motionSliderMaxIntensity.setValue(self.slider_min)
+            return
+            
+        img = self.update_image()
+
+        self.generic_slider_func(img,self.motionScreen)
+
+
     def motionSliderFrame_func(self):
         # call the generic slider with slider ID and target widget ID
-        self.generic_slider_func(self.motionSliderFrame, self.motionScreen)
+        self.movie_ctr=self.motionSliderFrame.value()
+        self.motionLineEditFrameId.setText(str(self.movie_ctr))
 
+        # load img
+        img = self.update_image()
+        self.generic_slider_func(img, self.motionScreen)
+                                #image, screen_widget):
+                
+        #img = self.update_image()
+        #self.generic_slider_func(img,self.motionScreen)
+        
     def generic_slider_func(self, image, screen_widget):
         ''' Takes slider widget and its value and displays in target
             screen widget
@@ -285,7 +352,6 @@ class MainW(QMainWindow):
         if len(self.movie)==0:
             print ("No movie loaded ...")
             return
-
 
         # display frame
         img = self.update_image()
@@ -330,13 +396,26 @@ class MainW(QMainWindow):
         # Cat: TODO: is all this formatting necessary?
         # Cat: TODO: also, can we just cast opencv imshow to the widget?
         
-        print (image_raw.shape[1],image_raw.shape[0],
-                                            image_raw.strides[0])
+        #image_raw = np.array(image_raw, dtype='uint8')
+        
+        #fname = '/home/cat/code/caiman_gui/test.npy'
+        #np.save(fname, image_raw)
+        #image_raw = np.load(fname)
+                
+        #print (type(image_raw))
+        #print (type(image_raw[0]))
+        #print (type(image_raw[0][0]))
+        print ("  img size, and strides: ", image_raw.shape[1],
+                    image_raw.shape[0], image_raw.strides[0])
         
         # convert from opencv format to pyqt QImage format
         qformat=QImage.Format_Grayscale8
+
         img=QImage(image_raw,image_raw.shape[1],image_raw.shape[0],
-                                            image_raw.strides[0],qformat)
+                                        image_raw.strides[0],qformat)
+        #img=QImage(image_raw,image_raw.shape[1],image_raw.shape[0],
+        #                                80,qformat)
+        
         pixmap = QtGui.QPixmap(img)
 
         # Stretch image to fit screen
