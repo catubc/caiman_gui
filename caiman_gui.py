@@ -13,6 +13,10 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import (QDialog, QApplication, QMainWindow, QSlider, QMessageBox,
                               QFileDialog, QTabWidget)
+
+from PyQt5.QtQuick import QQuickView
+from PyQt5.QtCore import QUrl
+
 from PyQt5.uic import loadUi
 
 import caiman as cm
@@ -170,9 +174,11 @@ class MainW(QMainWindow):
 
         # load movie
         print ("Loading movie")
+
         movie = cm.load(fname)
 
         self.movie = movie
+
         self.data_min = np.float(movie.min())
         self.data_max = np.float(movie.max())
 
@@ -243,6 +249,13 @@ class MainW(QMainWindow):
     def loadSliderMinIntensity_func(self):
         # call the generic slider with slider ID and target widget ID
         self.slider_min = np.float(self.loadSliderMinIntensity.value())
+        #self.slider_max = np.float(self.loadSliderMaxIntensity.value())
+        
+        # don't allow sliders to overlap
+        if self.slider_min>=self.slider_max:
+            self.loadSliderMinIntensity.setValue(self.slider_max)
+            #self.loadSliderFrame.setValue(slider_widget.value())
+            return
 
         img = self.update_image()
         self.generic_slider_func(img,self.loadScreen)
@@ -250,7 +263,12 @@ class MainW(QMainWindow):
     def loadSliderMaxIntensity_func(self):
         # call the generic slider with slider ID and target widget ID
         self.slider_max = np.float(self.loadSliderMaxIntensity.value())
-
+        
+        # don't allow sliders to overlap
+        if self.slider_max<=self.slider_min:
+            self.loadSliderMaxIntensity.setValue(self.slider_min)
+            return
+            
         img = self.update_image()
 
         self.generic_slider_func(img,self.loadScreen)
@@ -282,8 +300,18 @@ class MainW(QMainWindow):
         *********************************************************
     '''
 
+    def load_single_image(self, index):
+        ''' This function loads and normalizes a single image.
+            Need to do this outside of display function.
+        '''
+        
+        img = self.movie[index]
+        img = ((img-self.data_min)/(self.data_max-self.data_min))*99
+        return img
+        
 
     def update_image(self, img = None):
+
         # load single image
         if img is None:
             img = self.movie[self.loadSliderFrame.value()]
@@ -301,7 +329,10 @@ class MainW(QMainWindow):
         # standardized code for convering image to
         # Cat: TODO: is all this formatting necessary?
         # Cat: TODO: also, can we just cast opencv imshow to the widget?
-
+        
+        print (image_raw.shape[1],image_raw.shape[0],
+                                            image_raw.strides[0])
+        
         # convert from opencv format to pyqt QImage format
         qformat=QImage.Format_Grayscale8
         img=QImage(image_raw,image_raw.shape[1],image_raw.shape[0],
