@@ -705,8 +705,6 @@ class MainW(QMainWindow):
 
             Yr, dims, T = cm.load_memmap(file[0])
             images = np.reshape(Yr.T, [T] + list(dims), order='F')
-            import pdb
-            pdb.set_trace()
             opts = self.load_params_CNMF(file, is_patch=is_patch)
             opts.set('temporal', {'p': 0})
             cnm = CNMF(self.get_dict_param('n_processes_cnmf', 'single_int'), params=opts, dview=dview)
