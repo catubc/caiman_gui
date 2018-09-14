@@ -19,9 +19,14 @@ from PyQt5.QtCore import QUrl
 
 from PyQt5.uic import loadUi
 
+import pylab as pl
 import caiman as cm
 from caiman.motion_correction import MotionCorrect
 from caiman.mmapping import save_memmap
+from caiman.utils.visualization import inspect_correlation_pnr
+from caiman.summary_images import correlation_pnr
+from caiman.source_extraction.cnmf.params import CNMFParams
+from caiman.source_extraction.cnmf.cnmf import CNMF
 
 class MainW(QMainWindow):
     def __init__(self):
@@ -130,6 +135,7 @@ class MainW(QMainWindow):
 
     @pyqtSlot()
     def on_motionRunRigid_clicked(self):
+        self.init_params()
         print ("Running rigid motion correction on the following files")
         files = [self.loadList.item(count).text() for count in range(self.loadList.count())]
         print(files)
@@ -142,6 +148,7 @@ class MainW(QMainWindow):
 
     @pyqtSlot()
     def on_motionRunPWRigid_clicked(self):
+        self.init_params()
         print('Running pw-rigid motion correction on the following files')
         files = [self.loadList.item(count).text() for count in range(self.loadList.count())]
         print(files)
@@ -160,8 +167,6 @@ class MainW(QMainWindow):
 
     @pyqtSlot(int)
     def on_memmapComboListSelectFiles_currentIndexChanged(self, i):
-
-
         if i ==2:
             files = [self.loadList.item(count).text() for count in range(self.loadList.count())]
         elif i==1:
@@ -177,6 +182,7 @@ class MainW(QMainWindow):
 
     @pyqtSlot()
     def on_memmapButtomStartMemmap_clicked(self):
+        self.init_params()
         # send slider, load list and target screen
         files = [self.memmapListFiles.item(count).text() for count in range(self.memmapListFiles.count())]
 
@@ -185,6 +191,64 @@ class MainW(QMainWindow):
             self.memmapListFileOutput.addItem(new_file)
         else:
             print("no files loaded")
+
+    @pyqtSlot(int)
+    def on_cnmfComboBoxSelectFile_currentIndexChanged(self, i):
+
+        if i == 2:
+            files = [self.loadList.item(count).text() for count in range(self.loadList.count())]
+        elif i == 1:
+            files = [self.memmapListFiles.item(count).text() for count in range(self.memmapListFiles.count())]
+
+        if len(files) > 0:
+            print("files selected:")
+            for k in range(len(files)):
+                print(files[k])
+                self.cnmfListFilesInput.addItem(files[k])
+        else:
+            print('No File Loaded')
+
+    @pyqtSlot()
+    def on_cnmfButtonFilesCorrImage_clicked(self):
+        file = self.cnmfListFilesInput.item(0).text()
+
+        pl.imshow(cm.load(file).local_correlations(eight_neighbours=True, swap_dim=False, frames_per_chunk=1500,
+                                                   order_mean=1), vmax=np.float(self.cnmfMaxCorrImage.text()))
+
+    @pyqtSlot()
+    def on_cnmfButtonFilesPNRImage_clicked(self):
+        file = self.cnmfListFilesInput.item(0).text()
+        Yr, dims, T = cm.load_memmap(file)
+        Y = Yr.T.reshape((T,) + dims, order='F')
+        print(np.float(self.cnmfMaxCorrImage.text()))
+        cn_filter, pnr = correlation_pnr(Y, gSig=np.float(self.gSigFilter.text()), swap_dim=False)
+        # inspect the summary images and set the parameters
+        inspect_correlation_pnr(cn_filter, pnr)
+
+
+
+
+
+    @pyqtSlot() # run CNMF full FOV
+    def on_cnmfFOVButtonRunCNMF_clicked(self):
+        self.init_params()
+        files = [self.cnmfListFilesInput.item(count).text() for count in range(self.cnmfListFilesInput.count())]
+        if len(files)>0:
+            saved_object_path = self.run_cnmf(files, is_patch=False)
+            self.cnmfListFilesOutput.addItem(saved_object_path)
+        else:
+            print('No files Loaded')
+
+    @pyqtSlot()  # run CNMF patches
+    def on_cnmfPatchesButtonRunCNMF_clicked(self):
+        self.init_params()
+        files = [self.cnmfListFilesInput.item(count).text() for count in range(self.cnmfListFilesInput.count())]
+        if len(files) > 0:
+            saved_object_path = self.run_cnmf(files, is_patch=True)
+            self.cnmfListFilesOutput.addItem(saved_object_path)
+        else:
+            print('No files Loaded')
+
 
     ''' *********************************************************
         *********************************************************
@@ -408,7 +472,12 @@ class MainW(QMainWindow):
 
 
     def get_dict_param(self,name,input_type):
-        if input_type == 'tuple_int':
+        if input_type == 'str':
+            if name == 'method_init':
+                return self.params[name].currentText()
+            else:
+                return self.params[name].text()
+        elif input_type == 'tuple_int':
             return tuple(map(int, self.params[name].text().split(',')))
         if input_type == 'tuple_float':
             return tuple(map(int, self.params[name].text().split(',')))
@@ -461,7 +530,7 @@ class MainW(QMainWindow):
         dview = None
         try:
             c, dview, n_processes = cm.cluster.setup_cluster(
-                backend='local', n_processes=None, single_thread=True)
+                backend='local', n_processes=None, single_thread=False)
 
             niter_rig = 1  # number of iterations for rigid motion correction
             max_shifts = self.get_dict_param('max_shifts_pwrigid','tuple_int')  # maximum allow rigid shift
@@ -505,7 +574,7 @@ class MainW(QMainWindow):
         dview = None
         try:
             c, dview, n_processes = cm.cluster.setup_cluster(
-                backend='local', n_processes=n_processes, single_thread=True)
+                backend='local', n_processes=n_processes, single_thread=False)
 
             resize_fact = self.get_dict_param('resize_fact', 'tuple_float')
             add_to_movie = self.get_dict_param('add_to_movie', 'single_float')
@@ -526,6 +595,64 @@ class MainW(QMainWindow):
 
         finally:
             cm.cluster.stop_server(dview=dview)
+
+    def load_params_CNMF(self, file,  is_patch):
+
+        opts_dict = {
+            'tsub': self.get_dict_param('tsub', 'single_int'),
+            'ssub': self.get_dict_param('ssub', 'single_int'),
+            'fnames': file,
+            'decay_time': self.get_dict_param('decay_time', 'single_float'),
+            'fr': self.get_dict_param('frate', 'single_float'),
+            'nb': self.get_dict_param('gnb', 'single_int'),
+            'gSig': self.get_dict_param('gSig', 'tuple_int'),
+            'method_init': self.get_dict_param('method_init', 'str'),
+            'rolling_sum': True,
+            'merge_thr': self.get_dict_param('merge_thresh', 'single_float'),
+            'n_processes': self.get_dict_param('n_processes_cnmf', 'single_int'),
+        }
+
+        if is_patch:
+            opts_dict['K'] = self.get_dict_param('k_patch', 'single_int')
+            opts_dict['rf'] = self.get_dict_param('rf', 'single_int'),
+            opts_dict['stride'] =  self.get_dict_param('stride', 'single_int'),
+        else:
+            opts_dict['K'] = self.get_dict_param('k', 'single_int')
+
+        return CNMFParams(params_dict=opts_dict)
+
+
+    def run_cnmf(self, file, is_patch):
+        dview = None
+        try:
+            c, dview, n_processes = cm.cluster.setup_cluster(
+                backend='local', n_processes=self.get_dict_param('n_processes_cnmf', 'single_int'), single_thread=False)
+
+
+            Yr, dims, T = cm.load_memmap(file[0])
+            images = np.reshape(Yr.T, [T] + list(dims), order='F')
+            import pdb
+            pdb.set_trace()
+            opts = self.load_params_CNMF(file, is_patch=is_patch)
+            opts.set('temporal', {'p': 0})
+            cnm = CNMF(self.get_dict_param('n_processes_cnmf', 'single_int'), params=opts, dview=dview)
+            cnm = cnm.fit(images)
+            cnm.params.set('temporal', {'p': self.get_dict_param('p', 'single_int')})
+            if is_patch:
+                cnm2 = cnm.refit(images)
+                cnm2.save(file[0][:-4] + 'hdf5')
+            else:
+                cnm.save(file[0][:-4] + 'hdf5')
+
+            print('SAVED FILE ' + file[0][:-4]+'hdf5')
+            return(file[0][:-4]+'hdf5')
+
+        except Exception as e:
+            raise e
+
+        finally:
+            cm.cluster.stop_server(dview=dview)
+
     ''' *********************************************************
         *********************************************************
         ******************** TAB EXECUTE FUNCTION ***************
