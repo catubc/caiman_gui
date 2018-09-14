@@ -21,6 +21,7 @@ from PyQt5.uic import loadUi
 
 import caiman as cm
 from caiman.motion_correction import MotionCorrect
+from caiman.mmapping import save_memmap
 
 class MainW(QMainWindow):
     def __init__(self):
@@ -157,6 +158,33 @@ class MainW(QMainWindow):
         self.generic_movie_load(self.motionSliderFrame, self.motionList,
                                                         self.motionScreen)
 
+    @pyqtSlot(int)
+    def on_memmapComboListSelectFiles_currentIndexChanged(self, i):
+
+
+        if i ==2:
+            files = [self.loadList.item(count).text() for count in range(self.loadList.count())]
+        elif i==1:
+            files = [self.motionList.item(count).text() for count in range(self.motionList.count())]
+
+        if len(files) > 0:
+            print("files selected:")
+            for k in range(len(files)):
+                print(files[k])
+                self.memmapListFiles.addItem(files[k])
+        else:
+            print('No File Loaded')
+
+    @pyqtSlot()
+    def on_memmapButtomStartMemmap_clicked(self):
+        # send slider, load list and target screen
+        files = [self.memmapListFiles.item(count).text() for count in range(self.memmapListFiles.count())]
+
+        if len(files) > 0:
+            new_file = self.memory_map_files(files)
+            self.memmapListFileOutput.addItem(new_file)
+        else:
+            print("no files loaded")
 
     ''' *********************************************************
         *********************************************************
@@ -388,6 +416,9 @@ class MainW(QMainWindow):
             return int(self.params[name].text())
         elif input_type == 'single_float':
             return float(self.params[name].text())
+        elif input_type == 'slices':
+            if self.params[name].text() is not 'None':
+                return [slice(*s) for s in eval(self.params[name].text())]
         else:
             raise Exception('Unknown type')
 
@@ -469,7 +500,32 @@ class MainW(QMainWindow):
         finally:
             cm.cluster.stop_server(dview=dview)
 
+    def memory_map_files(self, files):
+        n_processes = self.get_dict_param('n_processes_mmap', 'single_int')
+        dview = None
+        try:
+            c, dview, n_processes = cm.cluster.setup_cluster(
+                backend='local', n_processes=n_processes, single_thread=True)
 
+            resize_fact = self.get_dict_param('resize_fact', 'tuple_float')
+            add_to_movie = self.get_dict_param('add_to_movie', 'single_float')
+            border_to_0 = self.get_dict_param('border_to_0', 'single_int')
+            n_chunks = self.get_dict_param('n_chunks', 'single_int')
+            slices = self.get_dict_param('slices', 'slices')
+
+            new_file = save_memmap(files, base_name='memmap_', resize_fact=resize_fact, order='C', add_to_movie=add_to_movie, border_to_0=border_to_0, dview=dview,
+                        n_chunks=n_chunks, slices=slices)
+
+
+
+            return new_file
+
+
+        except Exception as e:
+            raise e
+
+        finally:
+            cm.cluster.stop_server(dview=dview)
     ''' *********************************************************
         *********************************************************
         ******************** TAB EXECUTE FUNCTION ***************
